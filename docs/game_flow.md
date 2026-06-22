@@ -38,20 +38,3 @@ flowchart TD
     SNS --> MODE_SELECT
     RESULT --> MODE_SELECT
 ```
-
-## ノード凡例
-
-- 角丸四角 `([])`: 起点・終点
-- 四角 `[]`: 画面・状態
-- ひし形 `{}`: 分岐判定
-
-## 対応する仕様
-
-| フロー段階 | 仕様参照 |
-|---|---|
-| モード選択分岐 | `game_flow_memo.md:6, 15-17` |
-| 問題パターンA/B | `game_flow_memo.md:20-24` |
-| 回答UI | `game_flow_memo.md:29-30` |
-| 正解/不正解演出 | `game_flow_memo.md:33-38` |
-| 5問ループ | `game_flow_memo.md:6-11` |
-| 結果発表・SNSシェア | `game_flow_memo.md:40-43` |
