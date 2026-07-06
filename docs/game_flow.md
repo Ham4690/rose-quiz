@@ -23,18 +23,22 @@ flowchart TD
     SUBMIT --> JUDGE{正解？}
 
     JUDGE -->|正解| CORRECT["🌹 正解演出<br/>効果音: ピーン<br/>花言葉解説"]
-    JUDGE -->|不正解| WRONG["残念...<br/>正解: ○本<br/>花言葉解説"]
+    JUDGE -->|不正解| WRONG["残念...<br/>正解: ○本<br/>花言葉解説（未獲得）"]
 
-    CORRECT --> ADD_COLLECTION[花言葉カード追加<br/>コレクションへ保存]
-    WRONG --> ADD_COLLECTION
-
+    CORRECT --> ADD_COLLECTION[花言葉カード追加<br/>コレクションへ保存<br/>※正解時のみ]
     ADD_COLLECTION --> COUNT[カウンター += 1]
+    WRONG --> COUNT
+
     COUNT --> CHECK{5問終了？}
 
     CHECK -->|No| Q_TYPE
-    CHECK -->|Yes| RESULT[結果発表<br/>正答率別称号<br/>例: ローズマスター 5/5]
+    CHECK -->|Yes| RESULT[結果発表<br/>正答数別称号<br/>例: ローズマスター 5/5]
 
-    RESULT --> SNS["SNSシェア<br/>X/Twitter #バラの花言葉 #何本贈る"]
+    RESULT --> SNS["SNSシェア<br/>X / LINE<br/>#バラの花言葉 #何本贈る"]
     SNS --> MODE_SELECT
     RESULT --> MODE_SELECT
 ```
+
+> 注: カード獲得は**正解時のみ**（ライフ制なし・1ラウンド5問固定）。
+> 出題は `quiz_enabled=true` の本数のみを対象とし、コレクションは全38本を表示する。
+> 詳細は [`design.md`](./design.md) を参照。
