@@ -31,9 +31,8 @@ python3 .claude/skills/validate-rose-data/validate.py data   # データ整合�
 ## ディレクトリ構成
 
 ```
-data/                 確定データ(source of truth) — 正規化 CSV 3 枚
-  rose_meaning.csv        本数マスタ (id PK, count UK, quiz_enabled, description)
-  meaning_variants.csv    花言葉 (1NF, FK -> rose_meaning.id)
+data/                 確定データ(source of truth) — CSV 2 枚
+  rose_meaning.csv        本数マスタ (id PK, count UK, quiz_enabled, meaning, description)
   quiz_titles.csv         結果画面の称号バンド
 docs/                 企画・設計ドキュメント
 src/                  アプリ本体 (React/TS)
@@ -47,14 +46,12 @@ RDB を使わないが、**いつでも RDB 移行・マッピング可能な正
 
 守るべき不変条件(詳細と根拠は `docs/design.md` §3):
 
-1. **サロゲート PK は安定**。`rose_meaning.id` / `meaning_variants.id` は行順に
-   依存しない。**欠番を詰めるための再採番は禁止**(FK が壊れる)。
+1. **サロゲート PK は安定**。`rose_meaning.id` は行順に依存しない。
+   **欠番を詰めるための再採番は禁止**(識別子の同一性が壊れる)。
 2. **`count` は UNIQUE な自然キー**。本数と PK は別物。
 3. **1NF**: `meaning` は単一値。1 セルに複数の花言葉(`/` 区切り)を入れない。
-   複数意味は `meaning_variants` の複数行で表す。
-4. **FK 整合**: `meaning_variants.rose_meaning_id` は必ず実在する
-   `rose_meaning.id` を指す。親を消すときは子(variants)も消す。
-5. **出題プールの一意性**: パターンA(4択)の正解が一意になるよう、酷似する
+   1本数につき代表の花言葉1件のみを保持する。
+4. **出題プールの一意性**: パターンA(4択)の正解が一意になるよう、酷似する
    花言葉を持つ本数は片方の `quiz_enabled` を `false` にする(`docs/design.md` §3.2)。
    除外側もコレクションには全 38 本表示する。
 
@@ -67,7 +64,7 @@ RDB を使わないが、**いつでも RDB 移行・マッピング可能な正
 - 出題は **案B**(パターンA=本数→意味4択 / パターンB=シチュエーション→本数)。
 - カード獲得は **正解時のみ**。ライフ(♡)なし。1 ラウンド 5 問固定。
 - シェアは **X + LINE**。
-- 出題は `quiz_enabled=true`(33 本)のみ。コレクションは全 38 本。
+- 出題は `quiz_enabled=true`(35 本)のみ。コレクションは全 38 本。
 - 静的 questions テーブルは持たず、**マスタから動的生成**(`docs/design.md` §5)。
 
 ## コーディング規約
