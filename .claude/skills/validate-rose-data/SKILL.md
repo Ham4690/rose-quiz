@@ -28,7 +28,7 @@ Exit code 0 = all invariants hold; 1 = violations printed as `ERROR ...`.
 
 1. **rose_meaning**: `id` unique; `count` unique (natural key); `quiz_enabled ∈ {true,false}`; non-empty `meaning` and `description`; `meaning` is a **single value** (no `/` — 1NF atomic; keep one representative 花言葉 per count).
 2. **Quiz pool (pattern A)**: among `quiz_enabled=true` rows, no meaning string is shared by two different counts — otherwise a 4-choice "本数→意味" question would have a non-unique correct answer. Near-duplicate (fuzzy) pairs are resolved by disabling one side via `quiz_enabled=false`; see `docs/design.md` §要決定2.
-3. **quiz_titles**: score bands `[min_correct, max_correct]` cover `0..5` contiguously with no gaps or overlaps.
+3. **quiz_titles**: exactly one title per score (`correct` = 0..5), 1:1 with no gaps or duplicates.
 
 ## Important
 

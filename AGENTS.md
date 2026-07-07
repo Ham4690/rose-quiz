@@ -33,7 +33,7 @@ python3 .claude/skills/validate-rose-data/validate.py data   # データ整合�
 ```
 data/                 確定データ(source of truth) — CSV 2 枚
   rose_meaning.csv        本数マスタ (id PK, count UK, quiz_enabled, meaning, description)
-  quiz_titles.csv         結果画面の称号バンド
+  quiz_titles.csv         結果画面の称号 (correct 0..5 と 1:1)
 docs/                 企画・設計ドキュメント
 src/                  アプリ本体 (React/TS)
 .claude/skills/       プロジェクト skill(データ検証・追加運用)

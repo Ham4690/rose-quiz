@@ -10,7 +10,7 @@ faithful, RDB-ready source of truth:
                  non-empty meaning/description
   quiz pool (A): among quiz_enabled=true rows, no two counts share an identical
                  meaning (would make a 4-choice "本数→意味" answer non-unique)
-  quiz_titles  : score bands cover 0..MAX_SCORE contiguously, no overlap
+  quiz_titles  : exactly one title per score 0..MAX_SCORE (1:1, no gap/dup)
 
 Exit code 0 = all invariants hold, 1 = at least one violation.
 Usage: python3 .claude/skills/validate-rose-data/validate.py [data_dir]
@@ -62,24 +62,25 @@ def main(data_dir):
             errors.append(f"quiz pool: meaning {m!r} shared by enabled counts {sorted(owners, key=int)} "
                           f"-> pattern-A answer non-unique")
 
-    # ---- quiz_titles ----
-    covered = set()
+    # ---- quiz_titles (one title per score 0..MAX_SCORE) ----
+    covered = {}
     for t in titles:
-        lo, hi = int(t["min_correct"]), int(t["max_correct"])
-        if lo > hi:
-            errors.append(f"quiz_titles id={t['id']}: min_correct {lo} > max_correct {hi}")
-        for s in range(lo, hi + 1):
-            if s in covered:
-                errors.append(f"quiz_titles: score {s} covered by more than one band")
-            covered.add(s)
+        s = int(t["correct"])
+        if not (0 <= s <= MAX_SCORE):
+            errors.append(f"quiz_titles id={t['id']}: correct {s} out of range 0..{MAX_SCORE}")
+        if s in covered:
+            errors.append(f"quiz_titles: score {s} mapped by more than one title")
+        covered[s] = t
+        if not t["title"].strip():
+            errors.append(f"quiz_titles id={t['id']}: empty title")
     for s in range(0, MAX_SCORE + 1):
         if s not in covered:
-            errors.append(f"quiz_titles: score {s} not covered by any title band")
+            errors.append(f"quiz_titles: score {s} has no title")
 
     # ---- report ----
     enabled = sum(1 for r in master if r["quiz_enabled"] == "true")
     print(f"rose_meaning: {len(master)} rows ({enabled} quiz-enabled)")
-    print(f"quiz_titles: {len(titles)} bands covering 0..{MAX_SCORE}")
+    print(f"quiz_titles: {len(titles)} titles (1:1 with scores 0..{MAX_SCORE})")
     if errors:
         print(f"\nFAILED with {len(errors)} error(s):")
         for e in errors:
